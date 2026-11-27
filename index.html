@@ -172,22 +172,9 @@
             'Nwagu Augusta O.'
         ];
 
-        const storageKey = 'armorsil-gift-exchange-pairs-v2';
-        const legacyStorageKey = 'armorsil-gift-exchange-pairs-v1';
+        const pairsEndpoint = '/api/pairs';
         const pairsPerBox = 8;
-
-        try {
-            localStorage.removeItem(legacyStorageKey);
-        } catch (error) {}
-
-        if (new URLSearchParams(window.location.search).has('reset')) {
-            try {
-                localStorage.removeItem(storageKey);
-                window.history.replaceState({}, '', window.location.pathname);
-            } catch (error) {
-                localStorage.removeItem(storageKey);
-            }
-        }
+        let pairs = [];
 
         const form = document.getElementById('giftDrawForm');
         const nameInput = document.getElementById('participantName');
@@ -221,24 +208,36 @@
         let suggestionItems = [];
         let activeSuggestion = -1;
         let isDrawing = false;
+        let pairsReady = false;
 
-        function loadPairs() {
+        async function loadSharedPairs() {
             try {
-                const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                return Array.isArray(parsed)
-                    ? parsed.filter((pair) => Array.isArray(pair) && pair.length === 2 && pair.every((name) => nameIndex.has(normalize(name))))
+                const response = await fetch(pairsEndpoint, { cache: 'no-store' });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Could not load saved pairs.');
+
+                pairs = Array.isArray(data.pairs)
+                    ? data.pairs.filter((pair) => Array.isArray(pair) && pair.length === 2 && pair.every((name) => nameIndex.has(normalize(name))))
                     : [];
+                pairsReady = true;
             } catch (error) {
-                return [];
+                pairs = [];
+                pairsReady = false;
+                showFeedback(error.message || 'Could not load saved pairs. Please refresh and try again.', true);
             }
+
+            render();
         }
 
-        function savePairs(pairs) {
-            try {
-                localStorage.setItem(storageKey, JSON.stringify(pairs));
-            } catch (error) {
-                showFeedback('This browser cannot save draw progress. Please use an up-to-date browser.', true);
-            }
+        async function savePair(pair) {
+            const response = await fetch(pairsEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pair })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Could not save the pair.');
+            return Array.isArray(data.pairs) ? data.pairs : [];
         }
 
         function pairedSet(pairs) {
@@ -318,7 +317,7 @@
                 return;
             }
 
-            const paired = pairedSet(loadPairs());
+            const paired = pairedSet(pairs);
             const matches = participants.filter((name) => normalize(name).includes(query)).slice(0, 8);
 
             suggestions.innerHTML = '';
@@ -394,7 +393,7 @@
         }
 
         function showSelectedBall(name) {
-            const existingPair = name ? findPair(name, loadPairs()) : null;
+            const existingPair = name ? findPair(name, pairs) : null;
             if (existingPair) {
                 const partner = existingPair[0] === name ? existingPair[1] : existingPair[0];
                 showPartner(name, partner, true);
@@ -434,7 +433,6 @@
         }
 
         function render() {
-            const pairs = loadPairs();
             const paired = pairedSet(pairs);
             const remaining = participants.filter((name) => !paired.has(name));
             const firstBox = pairs.slice(0, pairsPerBox);
@@ -478,7 +476,7 @@
             }
         });
 
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
             hideSuggestions();
             if (isDrawing) return;
@@ -489,7 +487,11 @@
                 return;
             }
 
-            const pairs = loadPairs();
+            if (!pairsReady) {
+                showFeedback('Still loading saved pairs. Please try again in a moment.', true);
+                return;
+            }
+
             const existingPair = findPair(name, pairs);
             if (existingPair) {
                 const partner = existingPair[0] === name ? existingPair[1] : existingPair[0];
@@ -507,27 +509,34 @@
             }
 
             const partner = pool[Math.floor(Math.random() * pool.length)];
-            pairs.push([name, partner]);
-            savePairs(pairs);
+            const startedAt = Date.now();
 
             isDrawing = true;
             drawButton.disabled = true;
             startRoll();
             showFeedback('Rolling the balls...', false);
 
-            setTimeout(() => {
+            try {
+                const updatedPairs = await savePair([name, partner]);
+                const wait = Math.max(0, 1900 - (Date.now() - startedAt));
+                await new Promise((resolve) => setTimeout(resolve, wait));
+                pairs = updatedPairs;
                 stopRoll();
                 nameInput.value = '';
                 showFeedback(`Partner drawn for ${name}.`, false);
                 showPartner(name, partner, false);
                 render();
+            } catch (error) {
+                stopRoll();
+                showFeedback(error.message || 'Could not save the pair. Please try again.', true);
+            } finally {
                 isDrawing = false;
                 drawButton.disabled = false;
-            }, 1900);
+            }
         });
 
         buildBallPool();
-        render();
+        loadSharedPairs();
         document.querySelectorAll('.reveal').forEach((element) => element.classList.add('visible'));
     </script>
 
