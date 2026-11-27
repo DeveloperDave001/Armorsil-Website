@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Exchange — Armorsil West Africa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/gift-exchange.css">
+</head>
+<body>
+
+    <section class="gift-hero">
+        <div class="container">
+            <div class="gift-hero-content">
+                <p class="gift-hero-tag">December Tradition</p>
+                <h1>Armorsil Gift Exchange</h1>
+                <p>A little December surprise for the team. Enter your name, take a draw, and discover who you will be shopping for this year.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="gift-how">
+        <div class="container">
+            <div class="section-header reveal">
+                <p class="section-tag">How It Works</p>
+                <h2 class="section-title">Three Steps to Your Partner</h2>
+            </div>
+            <div class="gift-steps">
+                <div class="gift-step reveal">
+                    <span class="gift-step-index">1</span>
+                    <h3>Enter your name</h3>
+                    <p>Type your full name into the draw form and check that it matches the exchange list.</p>
+                </div>
+                <div class="gift-step reveal">
+                    <span class="gift-step-index">2</span>
+                    <h3>Take a random draw</h3>
+                    <p>The draw picks from people who have not been paired yet and forms a mutual pair.</p>
+                </div>
+                <div class="gift-step reveal">
+                    <span class="gift-step-index">3</span>
+                    <h3>Keep your match a secret</h3>
+                    <p>Your partner is revealed only to you. If someone picked you first, your existing pair is shown instead.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gift-draw">
+        <div class="container">
+            <div class="section-header reveal">
+                <p class="section-tag">The Draw</p>
+                <h2 class="section-title">Find Your Gift Partner</h2>
+            </div>
+
+            <div class="gift-status is-live reveal">
+                <div class="gift-status-dot"></div>
+                <div>
+                    <strong>Draw is live</strong>
+                    <span>Names stay hidden until a draw is made. Each person appears in one pair only.</span>
+                </div>
+            </div>
+
+            <div class="gift-draw-shell">
+                <div class="gift-panel reveal">
+                    <div class="gift-panel-head">
+                        <span class="gift-step-number">01</span>
+                        <div>
+                            <h3>Enter Your Name</h3>
+                            <p>Use the name you are registered with for the exchange.</p>
+                        </div>
+                    </div>
+                    <form class="gift-draw-form" id="giftDrawForm">
+                        <div class="gift-field">
+                            <label for="participantName">Full name</label>
+                            <input type="text" id="participantName" name="participantName" placeholder="Start typing your name..." autocomplete="off" required role="combobox" aria-autocomplete="list" aria-controls="nameSuggestions" aria-expanded="false">
+                            <div class="gift-autocomplete" id="nameSuggestions" role="listbox" hidden></div>
+                        </div>
+                        <button type="submit" class="btn-acid gift-draw-button" id="drawButton">Draw My Partner</button>
+                        <p class="gift-feedback" id="giftFeedback" role="status" aria-live="polite"></p>
+                        <p class="gift-helper">Start typing to see matching staff names. Click one to select it, then draw. Already paired names are marked.</p>
+                    </form>
+                </div>
+
+                <div class="gift-result reveal" id="resultPanel" aria-live="polite">
+                    <div class="gift-result-label">Your Match</div>
+                    <div class="gift-ball-stage" id="ballStage">
+                        <div class="gift-ball-pool" id="ballPool" aria-hidden="true"></div>
+                        <div class="gift-ball-selected" id="selectedBall" hidden>
+                            <div class="gift-ball gift-ball--large gift-ball--yours"><span id="selectedBallNumber">—</span></div>
+                            <span class="gift-ball-tag" id="selectedBallOwner">Your ball</span>
+                        </div>
+                        <div class="gift-ball-reveal" id="ballReveal" hidden>
+                            <div class="gift-ball-reveal-item">
+                                <div class="gift-ball gift-ball--reveal gift-ball--yours"><span id="yourRevealNumber">—</span></div>
+                                <span class="gift-ball-owner is-yours">You</span>
+                            </div>
+                            <div class="gift-ball-link" aria-hidden="true"></div>
+                            <div class="gift-ball-reveal-item">
+                                <div class="gift-ball gift-ball--reveal gift-ball--partner"><span id="partnerRevealNumber">—</span></div>
+                                <span class="gift-ball-owner" id="matchedName">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="gift-result-caption" id="resultCaption">Type your name to find your ball</p>
+                </div>
+            </div>
+
+            <div class="gift-stats reveal">
+                <div class="gift-stat">
+                    <span class="gift-stat-value" id="availableCount">—</span>
+                    <span class="gift-stat-label">Names available</span>
+                </div>
+                <div class="gift-stat">
+                    <span class="gift-stat-value" id="drawnCount">—</span>
+                    <span class="gift-stat-label">Pairs formed</span>
+                </div>
+                <div class="gift-stat">
+                    <span class="gift-stat-value" id="lastDrawn">—</span>
+                    <span class="gift-stat-label">Last name paired</span>
+                </div>
+            </div>
+
+            <div class="gift-roster reveal" id="giftRoster" hidden>
+                <div class="gift-roster-card" id="pairBoxA">
+                    <h3>Paired Names · Box 1</h3>
+                    <ul class="gift-pair-list" id="pairedNamesA"></ul>
+                </div>
+                <div class="gift-roster-card" id="pairBoxB" hidden>
+                    <h3>Paired Names · Box 2</h3>
+                    <ul class="gift-pair-list" id="pairedNamesB"></ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const participants = [
+            'Adedamola Adeola',
+            'Deborah Adu',
+            'Femi Akinsola',
+            'John Angulu',
+            'Henry Ajaluke',
+            'Amarachi Chukwuka',
+            'Lawrencia Daniel',
+            'Olie Sheila',
+            'Magdalene Simeon',
+            'Job Sambo',
+            'Victor Olaitan',
+            'Brown Omadju',
+            'Onyejurunwa Chinonso',
+            'Izuchukwu Ezenwafor',
+            'Mercy Chinwetalu',
+            'Adigun Janet',
+            'Ogbaji Julius',
+            'Mary Daodu',
+            'Akukwe Priscilla',
+            'Yusuf Dolapo Ayomide',
+            'Mbalisike Samuel',
+            'Samuel Abayomi',
+            'Omopariola David',
+            'Adebola Olubode',
+            'Precious Asekhamen',
+            'Ebitimi Abel Vincent',
+            'Emmanuel Akpan',
+            'Islamiya .O. Jibril',
+            'Abu Aishat O',
+            'Dadi Ram Khatiwada',
+            'Bolumade Kafayat O.',
+            'Nwagu Augusta O.'
+        ];
+
+        const storageKey = 'armorsil-gift-exchange-pairs-v2';
+        const legacyStorageKey = 'armorsil-gift-exchange-pairs-v1';
+        const pairsPerBox = 8;
+
+        try {
+            localStorage.removeItem(legacyStorageKey);
+        } catch (error) {}
+
+        if (new URLSearchParams(window.location.search).has('reset')) {
+            try {
+                localStorage.removeItem(storageKey);
+                window.history.replaceState({}, '', window.location.pathname);
+            } catch (error) {
+                localStorage.removeItem(storageKey);
+            }
+        }
+
+        const form = document.getElementById('giftDrawForm');
+        const nameInput = document.getElementById('participantName');
+        const suggestions = document.getElementById('nameSuggestions');
+        const feedback = document.getElementById('giftFeedback');
+        const drawButton = document.getElementById('drawButton');
+        const result = document.getElementById('resultPanel');
+        const ballStage = document.getElementById('ballStage');
+        const ballPool = document.getElementById('ballPool');
+        const ballReveal = document.getElementById('ballReveal');
+        const selectedBall = document.getElementById('selectedBall');
+        const selectedBallNumber = document.getElementById('selectedBallNumber');
+        const selectedBallOwner = document.getElementById('selectedBallOwner');
+        const yourRevealNumber = document.getElementById('yourRevealNumber');
+        const partnerRevealNumber = document.getElementById('partnerRevealNumber');
+        const matchedName = document.getElementById('matchedName');
+        const resultCaption = document.getElementById('resultCaption');
+        const availableCount = document.getElementById('availableCount');
+        const drawnCount = document.getElementById('drawnCount');
+        const lastDrawn = document.getElementById('lastDrawn');
+        const roster = document.getElementById('giftRoster');
+        const pairBoxA = document.getElementById('pairBoxA');
+        const pairBoxB = document.getElementById('pairBoxB');
+        const pairedNamesA = document.getElementById('pairedNamesA');
+        const pairedNamesB = document.getElementById('pairedNamesB');
+
+        const normalize = (value) => value.toLowerCase().replace(/\./g, '').replace(/\s+/g, ' ').trim();
+        const pad = (number) => String(number).padStart(2, '0');
+        const nameIndex = new Map(participants.map((name) => [normalize(name), name]));
+        const ballNumber = new Map(participants.map((name, index) => [name, index + 1]));
+        let suggestionItems = [];
+        let activeSuggestion = -1;
+        let isDrawing = false;
+
+        function loadPairs() {
+            try {
+                const parsed = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                return Array.isArray(parsed)
+                    ? parsed.filter((pair) => Array.isArray(pair) && pair.length === 2 && pair.every((name) => nameIndex.has(normalize(name))))
+                    : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function savePairs(pairs) {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify(pairs));
+            } catch (error) {
+                showFeedback('This browser cannot save draw progress. Please use an up-to-date browser.', true);
+            }
+        }
+
+        function pairedSet(pairs) {
+            return new Set(pairs.flat());
+        }
+
+        function findPair(name, pairs) {
+            return pairs.find((pair) => pair[0] === name || pair[1] === name);
+        }
+
+        function renderPairList(element, pairs, startIndex) {
+            element.innerHTML = '';
+
+            pairs.forEach((pair, index) => {
+                const item = document.createElement('li');
+                item.className = 'gift-pair';
+
+                const label = document.createElement('span');
+                label.className = 'gift-pair-label';
+                label.textContent = `Pair ${String(startIndex + index + 1).padStart(2, '0')}`;
+
+                const line = document.createElement('div');
+                line.className = 'gift-pair-line';
+
+                const first = document.createElement('span');
+                first.className = 'gift-pair-person';
+                first.textContent = pair[0];
+
+                const rope = document.createElement('span');
+                rope.className = 'gift-pair-rope';
+                rope.setAttribute('aria-hidden', 'true');
+
+                const second = document.createElement('span');
+                second.className = 'gift-pair-person';
+                second.textContent = pair[1];
+
+                line.appendChild(first);
+                line.appendChild(rope);
+                line.appendChild(second);
+                item.appendChild(label);
+                item.appendChild(line);
+                element.appendChild(item);
+            });
+        }
+
+        function hideSuggestions() {
+            suggestions.hidden = true;
+            suggestions.innerHTML = '';
+            suggestionItems = [];
+            activeSuggestion = -1;
+            nameInput.setAttribute('aria-expanded', 'false');
+            nameInput.removeAttribute('aria-activedescendant');
+        }
+
+        function setActiveSuggestion(index) {
+            activeSuggestion = index;
+            suggestionItems.forEach((item, itemIndex) => item.classList.toggle('is-active', itemIndex === index));
+            if (suggestionItems[index]) {
+                nameInput.setAttribute('aria-activedescendant', suggestionItems[index].id);
+            } else {
+                nameInput.removeAttribute('aria-activedescendant');
+            }
+        }
+
+        function chooseSuggestion(name) {
+            nameInput.value = name;
+            showFeedback('', false);
+            hideSuggestions();
+            showSelectedBall(name);
+        }
+
+        function renderSuggestions() {
+            const query = normalize(nameInput.value);
+            showSelectedBall(nameIndex.get(query));
+            if (query.length < 2) {
+                hideSuggestions();
+                return;
+            }
+
+            const paired = pairedSet(loadPairs());
+            const matches = participants.filter((name) => normalize(name).includes(query)).slice(0, 8);
+
+            suggestions.innerHTML = '';
+            suggestionItems = [];
+            activeSuggestion = -1;
+            nameInput.setAttribute('aria-expanded', 'true');
+
+            if (!matches.length) {
+                const empty = document.createElement('div');
+                empty.className = 'gift-suggestion-empty';
+                empty.textContent = 'No matching staff name found.';
+                suggestions.appendChild(empty);
+                suggestions.hidden = false;
+                return;
+            }
+
+            matches.forEach((name, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'gift-suggestion';
+                button.id = `gift-suggestion-${index}`;
+                button.setAttribute('role', 'option');
+
+                const label = document.createElement('span');
+                label.textContent = name;
+                button.appendChild(label);
+
+                if (paired.has(name)) {
+                    const badge = document.createElement('span');
+                    badge.className = 'gift-suggestion-badge';
+                    badge.textContent = 'Paired';
+                    button.appendChild(badge);
+                }
+
+                button.addEventListener('click', () => chooseSuggestion(name));
+                suggestions.appendChild(button);
+                suggestionItems.push(button);
+            });
+
+            suggestions.hidden = false;
+        }
+
+        function showFeedback(message, isError) {
+            feedback.textContent = message;
+            feedback.classList.toggle('is-error', Boolean(isError));
+        }
+
+        function buildBallPool() {
+            ballPool.innerHTML = '';
+            participants.forEach((name, index) => {
+                const ball = document.createElement('div');
+                ball.className = 'gift-ball gift-ball--pool';
+                ball.textContent = pad(index + 1);
+                ball.style.setProperty('--x', `${((index * 37) % 13 - 6) * 2}px`);
+                ball.style.setProperty('--y', `${((index * 23) % 9 - 4) * 2}px`);
+                ball.style.setProperty('--rot', `${(index * 41) % 360}deg`);
+                ball.style.setProperty('--delay', `${(index % 8) * 0.07}s`);
+                ballPool.appendChild(ball);
+            });
+        }
+
+        function startRoll() {
+            ballStage.classList.add('is-rolling');
+            selectedBall.hidden = true;
+            ballReveal.hidden = true;
+            ballPool.hidden = false;
+            resultCaption.textContent = 'Rolling the balls...';
+        }
+
+        function stopRoll() {
+            ballStage.classList.remove('is-rolling');
+            ballPool.hidden = true;
+        }
+
+        function showSelectedBall(name) {
+            const existingPair = name ? findPair(name, loadPairs()) : null;
+            if (existingPair) {
+                const partner = existingPair[0] === name ? existingPair[1] : existingPair[0];
+                showPartner(name, partner, true);
+                return;
+            }
+
+            result.classList.remove('has-match');
+            ballStage.classList.remove('is-rolling');
+            ballPool.hidden = true;
+            ballReveal.hidden = true;
+
+            if (!name) {
+                selectedBall.hidden = true;
+                resultCaption.textContent = 'Type your name to find your ball';
+                return;
+            }
+
+            const number = pad(ballNumber.get(name));
+            selectedBallNumber.textContent = number;
+            selectedBallOwner.textContent = `Your ball · ${name}`;
+            selectedBall.hidden = false;
+            resultCaption.textContent = `Ball ${number} belongs to ${name}. Click draw to roll.`;
+        }
+
+        function showPartner(name, partner, existed) {
+            result.classList.add('has-match');
+            ballStage.classList.remove('is-rolling');
+            ballPool.hidden = true;
+            selectedBall.hidden = true;
+            yourRevealNumber.textContent = pad(ballNumber.get(name));
+            partnerRevealNumber.textContent = pad(ballNumber.get(partner));
+            matchedName.textContent = partner;
+            ballReveal.hidden = false;
+            resultCaption.textContent = existed
+                ? `You were already paired with ${partner}. No second draw was made.`
+                : `Your gift partner is ${partner}. Keep it a secret.`;
+        }
+
+        function render() {
+            const pairs = loadPairs();
+            const paired = pairedSet(pairs);
+            const remaining = participants.filter((name) => !paired.has(name));
+            const firstBox = pairs.slice(0, pairsPerBox);
+            const secondBox = pairs.slice(pairsPerBox);
+
+            availableCount.textContent = remaining.length;
+            drawnCount.textContent = pairs.length;
+            lastDrawn.textContent = pairs.length ? pairs[pairs.length - 1][1] : '—';
+
+            roster.hidden = pairs.length === 0;
+            roster.classList.toggle('is-single', secondBox.length === 0);
+            pairBoxB.hidden = secondBox.length === 0;
+            renderPairList(pairedNamesA, firstBox, 0);
+            renderPairList(pairedNamesB, secondBox, pairsPerBox);
+        }
+
+        nameInput.addEventListener('input', renderSuggestions);
+
+        nameInput.addEventListener('keydown', (event) => {
+            if (suggestions.hidden) return;
+            if (event.key === 'ArrowDown' && !suggestionItems.length) return;
+            if (event.key === 'ArrowUp' && !suggestionItems.length) return;
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                setActiveSuggestion((activeSuggestion + 1) % suggestionItems.length);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                setActiveSuggestion((activeSuggestion - 1 + suggestionItems.length) % suggestionItems.length);
+            } else if (event.key === 'Enter' && suggestionItems[activeSuggestion]) {
+                event.preventDefault();
+                suggestionItems[activeSuggestion].click();
+            } else if (event.key === 'Escape') {
+                hideSuggestions();
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest || !event.target.closest('.gift-field')) {
+                hideSuggestions();
+            }
+        });
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            hideSuggestions();
+            if (isDrawing) return;
+
+            const name = nameIndex.get(normalize(nameInput.value));
+            if (!name) {
+                showFeedback('That name is not on the exchange list. Check the spelling and try again.', true);
+                return;
+            }
+
+            const pairs = loadPairs();
+            const existingPair = findPair(name, pairs);
+            if (existingPair) {
+                const partner = existingPair[0] === name ? existingPair[1] : existingPair[0];
+                showFeedback(`${name} has already been paired.`, false);
+                showPartner(name, partner, true);
+                render();
+                return;
+            }
+
+            const paired = pairedSet(pairs);
+            const pool = participants.filter((candidate) => candidate !== name && !paired.has(candidate));
+            if (!pool.length) {
+                showFeedback('There are no available partners left. Please check with the organiser.', true);
+                return;
+            }
+
+            const partner = pool[Math.floor(Math.random() * pool.length)];
+            pairs.push([name, partner]);
+            savePairs(pairs);
+
+            isDrawing = true;
+            drawButton.disabled = true;
+            startRoll();
+            showFeedback('Rolling the balls...', false);
+
+            setTimeout(() => {
+                stopRoll();
+                nameInput.value = '';
+                showFeedback(`Partner drawn for ${name}.`, false);
+                showPartner(name, partner, false);
+                render();
+                isDrawing = false;
+                drawButton.disabled = false;
+            }, 1900);
+        });
+
+        buildBallPool();
+        render();
+        document.querySelectorAll('.reveal').forEach((element) => element.classList.add('visible'));
+    </script>
+
+</body>
+</html>
